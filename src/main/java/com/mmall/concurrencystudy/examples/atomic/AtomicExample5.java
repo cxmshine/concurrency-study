@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @ThreadSafe
 public class AtomicExample5 {
 
-    //原子性更新AtomicExample5这个类的一个实例中名为"count"的这个字段,且该字段必须被volatile修饰,且不能被static修饰
+    //原子性更新AtomicExample5这个类的一个实例中名为"count"的这个字段,该字段必须被volatile修饰,且不能被static修饰
     private static AtomicIntegerFieldUpdater<AtomicExample5> updater =
             AtomicIntegerFieldUpdater.newUpdater(AtomicExample5.class,"count");
 

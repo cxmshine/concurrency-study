@@ -1,11 +1,13 @@
 package com.mmall.concurrencystudy.examples.sync;
 
+import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
+@ThreadSafe
 public class SynchronizedExample1 {
 
     //synchronized修饰代码块
