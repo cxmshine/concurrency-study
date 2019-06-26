@@ -1,26 +1,34 @@
-package com.mmall.concurrencystudy.commonUnsafe;
+package com.mmall.concurrencystudy.examples.lock;
 
-import com.mmall.concurrencystudy.annotations.NotThreadSafe;
+import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.StampedLock;
 
+/**
+ * 由Example2改动而来,改用StampedLock.
+ * StampedLock对吞吐量有巨大的改进
+ */
 @Slf4j
-@NotThreadSafe
-public class DateFormatExample1 {
+@ThreadSafe
+public class LockExample5 {
+
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+    public static int count = 0;
 
+    // 声明一个锁
+    private static StampedLock lock = new StampedLock();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -34,7 +42,7 @@ public class DateFormatExample1 {
             executorService.execute(() ->{
                 try {
                     semaphore.acquire(); // 判断进程是否允许被执行,当达到一定的并发数后,add()有可能被临时阻塞
-                    update();
+                    add();
                     semaphore.release(); // 执行完以后,将信号量释放
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -46,13 +54,16 @@ public class DateFormatExample1 {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
+        log.info("count:{}",count);
     }
 
-    private static void update(){
+    // 改动之处
+    private static void add(){
+        long stamped = lock.writeLock();
         try {
-            simpleDateFormat.parse("20190626");
-        } catch (Exception e) {
-            log.error("parse Exception",e);
+            count++;
+        } finally {
+            lock.unlock(stamped);
         }
     }
 }

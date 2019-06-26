@@ -1,25 +1,21 @@
-package com.mmall.concurrencystudy.commonUnsafe;
+package com.mmall.concurrencystudy.examples.concurrent;
 
-import com.mmall.concurrencystudy.annotations.NotThreadSafe;
+import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.Map;
+import java.util.concurrent.*;
 
 @Slf4j
-@NotThreadSafe
-public class HashSetExample {
+@ThreadSafe
+public class ConcurrentSkipListMapExample {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static Set<Integer> set = new HashSet<>();
+    private static Map<Integer,Integer> map = new ConcurrentSkipListMap<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -46,10 +42,10 @@ public class HashSetExample {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
-        log.info("size:{}", set.size());
+        log.info("size:{}", map.size());
     }
 
     private static void update(int i){
-        set.add(i);
+        map.put(i,i);
     }
 }

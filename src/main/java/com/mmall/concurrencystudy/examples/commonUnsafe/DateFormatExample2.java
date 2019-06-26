@@ -1,23 +1,22 @@
-package com.mmall.concurrencystudy.concurrent;
+package com.mmall.concurrencystudy.examples.commonUnsafe;
 
-import com.mmall.concurrencystudy.annotations.NotThreadSafe;
 import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.text.SimpleDateFormat;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 @Slf4j
 @ThreadSafe
-public class ConcurrentHashMapExample {
+public class DateFormatExample2 {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
-
-    private static Map<Integer,Integer> map = new ConcurrentHashMap<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -28,11 +27,10 @@ public class ConcurrentHashMapExample {
         //定义计数器闭锁
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         for(int i=0;i<clientTotal;i++){
-            final int count = i;
             executorService.execute(() ->{
                 try {
                     semaphore.acquire(); // 判断进程是否允许被执行,当达到一定的并发数后,add()有可能被临时阻塞
-                    update(count);
+                    update();
                     semaphore.release(); // 执行完以后,将信号量释放
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -44,10 +42,15 @@ public class ConcurrentHashMapExample {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
-        log.info("size:{}", map.size());
     }
 
-    private static void update(int i){
-        map.put(i,i);
+    private static void update(){
+        try {
+            // 堆栈封闭,局部变量,线程安全
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+            simpleDateFormat.parse("20190626");
+        } catch (Exception e) {
+            log.error("parse Exception",e);
+        }
     }
 }

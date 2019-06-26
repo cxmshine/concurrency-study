@@ -1,27 +1,22 @@
-package com.mmall.concurrencystudy.commonUnsafe;
+package com.mmall.concurrencystudy.examples.concurrent;
 
 import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.Set;
+import java.util.concurrent.*;
+
 
 @Slf4j
 @ThreadSafe
-public class DateFormatExample3 {
+public class CopyOnWriteArraySetExample {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
+    private static Set<Integer> set = new CopyOnWriteArraySet<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -48,9 +43,10 @@ public class DateFormatExample3 {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
+        log.info("size:{}", set.size());
     }
 
     private static void update(int i){
-        log.info("{},{}",i,DateTime.parse("20190626",dateTimeFormatter).toDate());
+        set.add(i);
     }
 }

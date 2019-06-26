@@ -1,23 +1,22 @@
-package com.mmall.concurrencystudy.commonUnsafe;
+package com.mmall.concurrencystudy.examples.concurrent;
 
 import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.Set;
+import java.util.concurrent.*;
+
 
 @Slf4j
 @ThreadSafe
-public class StringExample2 {
+public class ConcurrentSkipListSetExample {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    public static StringBuffer stringBuffer = new StringBuffer();
+    private static Set<Integer> set = new ConcurrentSkipListSet<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -28,10 +27,11 @@ public class StringExample2 {
         //定义计数器闭锁
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         for(int i=0;i<clientTotal;i++){
+            final int count = i;
             executorService.execute(() ->{
                 try {
                     semaphore.acquire(); // 判断进程是否允许被执行,当达到一定的并发数后,add()有可能被临时阻塞
-                    update();
+                    update(count);
                     semaphore.release(); // 执行完以后,将信号量释放
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -43,10 +43,10 @@ public class StringExample2 {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
-        log.info("size:{}", stringBuffer.length());
+        log.info("size:{}", set.size());
     }
 
-    private static void update(){
-        stringBuffer.append("1");
+    private static void update(int i){
+        set.add(i);
     }
 }

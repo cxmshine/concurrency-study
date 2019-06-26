@@ -1,22 +1,23 @@
-package com.mmall.concurrencystudy.concurrent;
+package com.mmall.concurrencystudy.examples.concurrent;
 
+import com.mmall.concurrencystudy.annotations.NotThreadSafe;
 import com.mmall.concurrencystudy.annotations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
-
 
 @Slf4j
 @ThreadSafe
-public class CopyOnWriteArraySetExample {
+public class ConcurrentHashMapExample {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static Set<Integer> set = new CopyOnWriteArraySet<>();
+    private static Map<Integer,Integer> map = new ConcurrentHashMap<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -43,10 +44,10 @@ public class CopyOnWriteArraySetExample {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
-        log.info("size:{}", set.size());
+        log.info("size:{}", map.size());
     }
 
     private static void update(int i){
-        set.add(i);
+        map.put(i,i);
     }
 }

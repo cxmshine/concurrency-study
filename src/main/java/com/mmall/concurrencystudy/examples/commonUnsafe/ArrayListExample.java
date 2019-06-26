@@ -1,22 +1,25 @@
-package com.mmall.concurrencystudy.concurrent;
+package com.mmall.concurrencystudy.examples.commonUnsafe;
 
-import com.mmall.concurrencystudy.annotations.ThreadSafe;
+import com.mmall.concurrencystudy.annotations.NotThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
-import java.util.concurrent.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 @Slf4j
-@ThreadSafe
-public class ConcurrentSkipListSetExample {
+@NotThreadSafe
+public class ArrayListExample {
     // 请求总数
     public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static Set<Integer> set = new ConcurrentSkipListSet<>();
+    private static List<Integer> list = new ArrayList<>();
 
     // 模拟并发测试
     public static void main(String[] args) throws Exception{
@@ -43,10 +46,10 @@ public class ConcurrentSkipListSetExample {
         countDownLatch.await(); // 能够保证计数器的值为0时,才执行后面的代码
         //关闭线程池
         executorService.shutdown();
-        log.info("size:{}", set.size());
+        log.info("size:{}",list.size());
     }
 
     private static void update(int i){
-        set.add(i);
+        list.add(i);
     }
 }
